@@ -4,9 +4,17 @@
     "node": true
   },
   "extends": ["airbnb", "prettier"],
+  "parser": "babel-eslint",
+  "parserOptions": {
+    "sourceType": "module",
+    "allowImportExportEverywhere": false,
+    "codeFrame": true
+  },
   "plugins": ["prettier"],
   "rules": {
     "prettier/prettier": ["error"],
-    "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }]
+    "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
+    "jsx-a11y/media-has-caption": "off",
+    "react/destructuring-assignment": [true, "never"]
   }
 }
