@@ -14,7 +14,9 @@
   "rules": {
     "prettier/prettier": ["error"],
     "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
+    "react/destructuring-assignment": [true, "never"],
     "jsx-a11y/media-has-caption": "off",
-    "react/destructuring-assignment": [true, "never"]
+    "prefer-destructuring": "off",
+    "react/prop-types": "off"
   }
 }
