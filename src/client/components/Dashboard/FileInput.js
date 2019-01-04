@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-export default class VideoFileInput extends Component {
+export default class FileInput extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -11,15 +11,16 @@ export default class VideoFileInput extends Component {
   handleChange = event => {
     const file = event.target.files[0];
     this.setState({ filename: file.name });
-    this.props.handleChange(file.type, URL.createObjectURL(file));
+    this.props.updateVideoFile(file.type, URL.createObjectURL(file));
   };
 
   render() {
     return (
       <div className="field">
-        <div className="file is-primary has-name is-fullwidth">
-          <label className="file-label">
+        <div className="file is-info has-name is-fullwidth">
+          <label htmlFor="video-file" className="file-label">
             <input
+              id="video-file"
               type="file"
               accept="video/*"
               onChange={this.handleChange}
@@ -27,7 +28,7 @@ export default class VideoFileInput extends Component {
               name="file-input"
             />
             <span className="file-cta">
-              <span className="file-label">Select Video File</span>
+              <span className="file-label">Select Video</span>
             </span>
             <span className="file-name">{this.state.filename}</span>
           </label>
