@@ -120,4 +120,27 @@ module.exports = class Party {
     this.send(socketID, 'leave-success');
     return true;
   }
+
+  sync(socketID, action, data) {
+    const syncInitiator = this.get(socketID);
+    if (syncInitiator.role === 'none') {
+      this.send(socketID, 'sync-error', 'Must be in a party to sync playback');
+      return false;
+    }
+    const hostID = syncInitiator.hostID;
+    const host = this.get(hostID);
+    const recipients = [hostID, ...host.clients.values()].filter(
+      id => id !== socketID
+    );
+    recipients.forEach(id => {
+      if (action === 'play') {
+        this.send(id, 'sync-play');
+      } else if (action === 'pause') {
+        this.send(id, 'sync-pause');
+      } else if (action === 'seek') {
+        this.send(id, 'sync-seek', data);
+      }
+    });
+    return true;
+  }
 };

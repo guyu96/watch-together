@@ -34,6 +34,18 @@ io.on('connection', socket => {
     console.log(`${socket.id} leave-party`);
     party.leaveParty(socket.id);
   });
+  socket.on('sync-play', () => {
+    console.log(`${socket.id} play`);
+    party.sync(socket.id, 'play');
+  });
+  socket.on('sync-pause', () => {
+    console.log(`${socket.id} pause`);
+    party.sync(socket.id, 'pause');
+  });
+  socket.on('sync-seek', data => {
+    console.log(`${socket.id} seek`);
+    party.sync(socket.id, 'seek', data);
+  });
 });
 
 const port = process.env.PORT || 3000;

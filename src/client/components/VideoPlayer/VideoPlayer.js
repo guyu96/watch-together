@@ -5,14 +5,18 @@ import 'video.js/dist/video-js.css';
 import './video-js-vsg-skin.css';
 
 export default class VideoPlayer extends Component {
+  constructor(props) {
+    super(props);
+    // A flag that is set to true after receiving a seek to prevent infinite event loops
+    this.justReceivedSeek = false;
+  }
+
   componentDidMount() {
-    const videoOptions = {
+    this.setupPlayer({
       autoplay: false,
       controls: true,
       fluid: true
-    };
-    this.player = videojs(this.videoNode, { ...videoOptions });
-    window.player = this.player;
+    });
   }
 
   componentDidUpdate() {
@@ -26,6 +30,56 @@ export default class VideoPlayer extends Component {
     if (this.player) {
       this.player.dispose();
     }
+  }
+
+  setupPlayer(options) {
+    this.player = videojs(this.videoNode, { ...options });
+    this.player.on('play', () => {
+      console.log('video-play');
+      // hide control bar to prevent seeking while the video plays, which triggers a lot of events
+      this.player.controlBar.hide();
+      if (this.props.role !== 'none' && !this.justReceivedSeek) {
+        this.props.socket.emit('sync-play');
+      }
+    });
+    this.player.on('pause', () => {
+      console.log('video-pause');
+      this.player.controlBar.show();
+      if (this.props.role !== 'none' && !this.justReceivedSeek) {
+        this.props.socket.emit('sync-pause');
+      }
+    });
+    this.player.on('seeking', () => {
+      console.log('video-seeking');
+    });
+    this.player.on('seeked', () => {
+      console.log('video-seek');
+      if (this.props.role !== 'none') {
+        if (this.justReceivedSeek) {
+          this.justReceivedSeek = false;
+        } else {
+          this.props.socket.emit('sync-seek', {
+            time: this.player.currentTime()
+          });
+        }
+      }
+    });
+    this.props.socket.on('sync-play', () => {
+      console.log('sync-play');
+      this.player.play();
+    });
+    this.props.socket.on('sync-pause', () => {
+      console.log('sync-pause');
+      this.player.pause();
+    });
+    this.props.socket.on('sync-seek', data => {
+      console.log('sync-seek', data);
+      this.justReceivedSeek = true;
+      this.player.currentTime(data.time);
+    });
+    this.props.socket.on('sync-error', data => {
+      console.error(data);
+    });
   }
 
   // Wrap the player in a div with a `data-vjs-player` attribute so videojs won't create additional wrapper in the DOM

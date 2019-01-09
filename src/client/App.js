@@ -7,8 +7,8 @@ import DashBoard from './components/Dashboard/Dashboard';
 import VideoPlayer from './components/VideoPlayer/VideoPlayer';
 
 export default class App extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       socketID: 'Connecting...',
       role: 'none',
@@ -137,7 +137,11 @@ export default class App extends Component {
               joinParty={this.joinParty}
               leaveParty={this.leaveParty}
             />
-            <VideoPlayer videoFile={this.state.videoFile} />
+            <VideoPlayer
+              role={this.state.role}
+              socket={this.socket}
+              videoFile={this.state.videoFile}
+            />
           </div>
         </div>
       </div>
