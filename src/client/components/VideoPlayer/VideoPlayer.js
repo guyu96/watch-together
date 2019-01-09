@@ -19,10 +19,19 @@ export default class VideoPlayer extends Component {
     });
   }
 
-  componentDidUpdate() {
-    const videoFile = this.props.videoFile;
-    if (videoFile) {
-      this.player.src(videoFile);
+  componentDidUpdate(prevProps) {
+    // Handle video file change
+    const old = prevProps.videoFile;
+    const incoming = this.props.videoFile;
+    if (incoming) {
+      if (!old || (incoming.type !== old.type || incoming.src !== old.src)) {
+        this.player.src(incoming);
+      }
+    }
+    // Handle resync by pausing and seeking to the current time
+    if (this.props.resync) {
+      this.player.pause();
+      this.player.currentTime(this.player.currentTime());
     }
   }
 
@@ -36,7 +45,7 @@ export default class VideoPlayer extends Component {
     this.player = videojs(this.videoNode, { ...options });
     this.player.on('play', () => {
       console.log('video-play');
-      // hide control bar to prevent seeking while the video plays, which triggers a lot of events
+      // Hide control bar to prevent seeking while the video plays, which triggers a lot of events
       this.player.controlBar.hide();
       if (this.props.role !== 'none' && !this.justReceivedSeek) {
         this.props.socket.emit('sync-play');
@@ -48,9 +57,6 @@ export default class VideoPlayer extends Component {
       if (this.props.role !== 'none' && !this.justReceivedSeek) {
         this.props.socket.emit('sync-pause');
       }
-    });
-    this.player.on('seeking', () => {
-      console.log('video-seeking');
     });
     this.player.on('seeked', () => {
       console.log('video-seek');

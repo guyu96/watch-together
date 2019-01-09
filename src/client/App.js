@@ -15,7 +15,8 @@ export default class App extends Component {
       hostID: '',
       clients: [],
       changingParty: false,
-      videoFile: null
+      videoFile: null,
+      resync: false
     };
     this.setupSocket();
   }
@@ -67,8 +68,13 @@ export default class App extends Component {
     });
     this.socket.on('member-joins', data => {
       console.log('member-joins', data);
+      if (this.state.role === 'host') {
+        // Host triggers resync in VideoPlayer when a new member joins
+        this.setState({ resync: true });
+      }
       this.setState(prevState => ({
-        clients: [...prevState.clients, data.id]
+        clients: [...prevState.clients, data.id],
+        resync: false // Reset resync to false after potential resync in VideoPlayer
       }));
     });
     this.socket.on('member-leaves', data => {
@@ -141,6 +147,7 @@ export default class App extends Component {
               role={this.state.role}
               socket={this.socket}
               videoFile={this.state.videoFile}
+              resync={this.state.resync}
             />
           </div>
         </div>
