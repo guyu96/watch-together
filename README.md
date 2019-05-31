@@ -2,6 +2,16 @@
 
 Watch Together provides synchronized video playback for online watch parties by propagating video playback control over websocket.
 
+To see Watch Together in action, visit https://watch-together-beta.herokuapp.com/.
+
+## Task List
+
+- [ ] Use proper logging in `server.js`
+- [ ] Kick idle sockets (e.g. sockets that have been inactive for 5 hours)
+- [ ] Limit socket connections based on IP
+- [ ] Enforce hard cap on the number of concurrent socket connections
+- [ ] UI Improvements (open to suggestions)
+
 ## Development
 
 To set up Watch Together for local development, clone this repostiory and make sure you have npm installed.
